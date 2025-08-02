@@ -1,1 +1,1 @@
-# test-traefik-labs
+# labs-traefik
