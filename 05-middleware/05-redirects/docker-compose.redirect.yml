@@ -11,8 +11,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
       - ./traefik.dns.yml:/etc/traefik/traefik.yml
+      - ./usersfile:/usersfile:ro # <-- mount your users file here
     environment:
-      - "DO_AUTH_TOKEN=<Your Super Secret Digital Ocean Token Goes here>"
+      - DO_AUTH_TOKEN=${DO_AUTH_TOKEN}
+    env_file:
+      - .env
 
   # Catapp service
   catapp:
@@ -20,17 +23,17 @@ services:
     labels:
       - "traefik.enable=true"
       # Routers
-      - "traefik.http.routers.catapp.rule=Host(`<your-domain-here>`)"
+      - "traefik.http.routers.catapp.rule=Host(`joeden.site`)"
       - "traefik.http.routers.catapp.entrypoints=web"
       - "traefik.http.routers.catapp.middlewares=test-redirectscheme"
-      - "traefik.http.routers.catapp-secure.rule=Host(`<your-domain-here>`)"
+      - "traefik.http.routers.catapp-secure.rule=Host(`joeden.site`)"
       - "traefik.http.routers.catapp-secure.entrypoints=websecure"
       - "traefik.http.routers.catapp-secure.tls.certresolver=myresolver"
       - "traefik.http.routers.catapp-secure.middlewares=test-auth,test-compress,test-errorpages,test-ratelimit"
       # Services
       - "traefik.http.services.catapp-secure.loadbalancer.server.port=5000"
-      # Middleware BasicAuth
-      - "traefik.http.middlewares.test-auth.basicauth.users=traefik:$$apr1$$.zPbdVg8$$LcHeyCZElH.JfxkxxlMPI.,user2:$$apr1$$XDrP1Fb1$$SZqSEjvNYW44vgJgI3iEP0"
+      # Middleware BasicAuth using usersfile
+      - "traefik.http.middlewares.test-auth.basicauth.usersfile=/usersfile"
       # Compress Middleware
       - "traefik.http.middlewares.test-compress.compress=true"
       # Error Pages Middleware
@@ -42,10 +45,6 @@ services:
       # Redirect Scheme HTTP -> HTTPS
       - "traefik.http.middlewares.test-redirectscheme.redirectscheme.scheme=https"
       - "traefik.http.middlewares.test-redirectscheme.redirectscheme.permanent=true"
-
-      # user1: traefik password: training
-      # user2: user2 password: test123
-      # Create hash password -> echo $(htpasswd -nb user2 test123) | sed -e s/\\$/\\$\\$/g
 
   # Error Page service
   error:
