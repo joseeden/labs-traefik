@@ -15,11 +15,12 @@ services:
       - DO_AUTH_TOKEN=${DO_AUTH_TOKEN}
     env_file:
       - .env
+
   catapp:
     image: mikesir87/cats:1.0
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.catapp.rule=Host(`joeden.site`)"
+      - "traefik.http.routers.catapp.rule=Host(`anything.joeden.site`)"
       - "traefik.http.routers.catapp.service=catapp"
       - "traefik.http.services.catapp.loadbalancer.server.port=5000"
       - "traefik.http.routers.catapp.entrypoints=websecure"
