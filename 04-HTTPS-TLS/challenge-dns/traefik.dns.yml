@@ -14,6 +14,8 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+  traefik:
+    address: ":8080"   
 
 # Challenge DNS
 certificatesResolvers:
@@ -31,7 +33,7 @@ http:
     traefik:
       rule: Host(`dashboard.joeden.site`)  # or use your domain + a subdomain
       entryPoints:
-        - websecure
+        - traefik
       service: api@internal
       # middlewares:                       # DO NOT DO IN PRODUCTION
       #   - auth                           # Disables the authentication
