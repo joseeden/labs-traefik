@@ -19,7 +19,7 @@ entryPoints:
 certificatesResolvers:
   myresolver:
     acme:
-      email: your_email@example.com 
+      email: josemanuelitoeden@gmail.com
       storage: /letsencrypt/acme.json
       dnsChallenge:
         provider: digitalocean

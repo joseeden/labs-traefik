@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./letsencrypt:/letsencrypt
+      - ../letsencrypt:/letsencrypt
       - ./traefik.dns.yml:/etc/traefik/traefik.yml
     environment:
       - "DO_AUTH_TOKEN=<add-the-digital-ocean-token-here"
@@ -18,7 +18,7 @@ services:
     image: mikesir87/cats:1.0
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.catapp.rule=Host(`anything.your_domain_here.com`)"
+      - "traefik.http.routers.catapp.rule=Host(`joeden.site`)"
       - "traefik.http.routers.catapp.service=catapp"
       - "traefik.http.services.catapp.loadbalancer.server.port=5000"
       - "traefik.http.routers.catapp.entrypoints=websecure"

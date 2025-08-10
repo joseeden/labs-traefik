@@ -9,14 +9,14 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./letsencrypt:/letsencrypt
-      - ./traefik.http.yml:/etc/traefik/traefik.yml
+      - ../letsencrypt:/letsencrypt # Copy Let's Encrypt certificate locally for backing up
+      - ./traefik.tls.yml:/etc/traefik/traefik.yml
 
   catapp:
     image: mikesir87/cats:1.0
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.catapp.rule=Host(`joeden.co`)"
+      - "traefik.http.routers.catapp.rule=Host(`joeden.site`)"
       - "traefik.http.routers.catapp.service=catapp"
       - "traefik.http.services.catapp.loadbalancer.server.port=5000"
       - "traefik.http.routers.catapp.entrypoints=websecure"
