@@ -10,6 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./usersfile:/usersfile:ro # <-- mount your users file here
 
   # Catapp service
   catapp:
@@ -23,8 +24,8 @@ services:
       - "traefik.http.routers.catapp.middlewares=test-auth,test-compress,test-errorpages,test-ratelimit"
       # Services
       - "traefik.http.services.catapp.loadbalancer.server.port=5000"
-      # Middleware BasicAuth
-      - "traefik.http.middlewares.test-auth.basicauth.users=traefik:$$apr1$$.zPbdVg8$$LcHeyCZElH.JfxkxxlMPI.,user2:$$apr1$$XDrP1Fb1$$SZqSEjvNYW44vgJgI3iEP0"
+      # Middleware BasicAuth using usersfile
+      - "traefik.http.middlewares.test-auth.basicauth.usersfile=/usersfile"
       # Compress Middleware
       - "traefik.http.middlewares.test-compress.compress=true"
       # Error Pages Middleware
@@ -33,10 +34,6 @@ services:
       - "traefik.http.middlewares.test-errorpages.errors.query=/{status}.html"
       # Rate Limit Middleware
       - "traefik.http.middlewares.test-ratelimit.ratelimit.average=2"
-
-      # user1: traefik password: training
-      # user2: user2 password: test123
-      # Create hash password -> echo $(htpasswd -nb user2 test123) | sed -e s/\\$/\\$\\$/g
 
   # Error Page service
   error:
