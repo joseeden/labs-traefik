@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik:v2.3
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml
+
+  # Add the catapp service
+  catapp:
+    image: mikesir87/cats:1.0
+    labels:
+      - "traefik.enable=true"
+      # Routers
+      - "traefik.http.routers.catapp.rule=Host(`catapp.localhost`)"
+      - "traefik.http.routers.catapp.service=catapp"
+      - "traefik.http.routers.catapp.entrypoints=web"
+      - "traefik.http.routers.catapp.middlewares=test-auth"
+      # Services
+      - "traefik.http.services.catapp.loadbalancer.server.port=5000"
+      # Middleware BasicAuth
+      - "traefik.http.middlewares.test-auth.basicauth.users=traefik:$$apr1$$.zPbdVg8$$LcHeyCZElH.JfxkxxlMPI.,user2:$$apr1$$XDrP1Fb1$$SZqSEjvNYW44vgJgI3iEP0"
+
+      # user1: traefik password: training
+      # user2: user2 password: test123
+      # Create hash password -> echo $(htpasswd -nb user2 test123) | sed -e s/\\$/\\$\\$/g

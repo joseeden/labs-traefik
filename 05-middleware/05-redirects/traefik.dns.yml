@@ -1,0 +1,26 @@
+api:
+  dashboard: true
+  insecure: true
+
+providers:
+  docker:
+    exposedByDefault: false
+
+log:
+  level: INFO
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+# Challenge DNS
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: brian@56k.cloud
+      storage: acme.json
+      dnsChallenge:
+        provider: digitalocean
+        delayBeforeCheck: 0
