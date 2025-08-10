@@ -22,16 +22,20 @@ services:
     image: mikesir87/cats:1.0
     labels:
       - "traefik.enable=true"
-      # Routers
-      - "traefik.http.routers.catapp.rule=Host(`joeden.site`)"
+      # Routers - Catapp HTTP
+      - "traefik.http.routers.catapp.rule=Host(`lab.joeden.site`)"
       - "traefik.http.routers.catapp.entrypoints=web"
       - "traefik.http.routers.catapp.middlewares=test-redirectscheme"
-      - "traefik.http.routers.catapp-secure.rule=Host(`joeden.site`)"
+      # Routers - Catapp HTTP Secure
+      - "traefik.http.routers.catapp-secure.rule=Host(`lab.joeden.site`)"
       - "traefik.http.routers.catapp-secure.entrypoints=websecure"
       - "traefik.http.routers.catapp-secure.tls.certresolver=myresolver"
       - "traefik.http.routers.catapp-secure.middlewares=test-auth,test-compress,test-errorpages,test-ratelimit"
-      # Services
+      # Services - Catapp HTTP Secure
       - "traefik.http.services.catapp-secure.loadbalancer.server.port=5000"
+      # Middleware - Redirect Scheme HTTP -> HTTPS
+      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.permanent=true"
       # Middleware BasicAuth using usersfile
       - "traefik.http.middlewares.test-auth.basicauth.usersfile=/usersfile"
       # Compress Middleware
@@ -42,9 +46,6 @@ services:
       - "traefik.http.middlewares.test-errorpages.errors.query=/{status}.html"
       # Rate Limit Middleware
       - "traefik.http.middlewares.test-ratelimit.ratelimit.average=2"
-      # Redirect Scheme HTTP -> HTTPS
-      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.test-redirectscheme.redirectscheme.permanent=true"
 
   # Error Page service
   error:
