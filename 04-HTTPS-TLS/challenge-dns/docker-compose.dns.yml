@@ -12,7 +12,7 @@ services:
       - ../letsencrypt:/letsencrypt
       - ./traefik.dns.yml:/etc/traefik/traefik.yml
     environment:
-      - "DO_AUTH_TOKEN=<add-the-digital-ocean-token-here"
+      - DO_AUTH_TOKEN=${DO_AUTH_TOKEN}
 
   catapp:
     image: mikesir87/cats:1.0
