@@ -19,7 +19,7 @@ entryPoints:
 certificatesResolvers:
   myresolver:
     acme:
-      email: brian@56k.cloud
+      email: josemanuelitoeden@gmail.com
       storage: acme.json
       dnsChallenge:
         provider: digitalocean
