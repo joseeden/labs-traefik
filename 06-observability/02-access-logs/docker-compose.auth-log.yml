@@ -10,6 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.access-log.yml:/etc/traefik/traefik.yml
+      - ./users_file:/users_file:ro # <-- mount your users file here
 
   catapp:
     image: mikesir87/cats:1.0
@@ -19,9 +20,12 @@ services:
       - "traefik.http.routers.catapp.rule=Host(`catapp.localhost`)"
       - "traefik.http.routers.catapp.service=catapp"
       - "traefik.http.routers.catapp.entrypoints=web"
-      - "traefik.http.routers.catapp.middlewares=test-compress,test-errorpages"
+      # - "traefik.http.routers.catapp.middlewares=test-compress,test-errorpages"
+      - "traefik.http.routers.catapp.middlewares=test-auth,test-compress,test-errorpages"
       # Services
       - "traefik.http.services.catapp.loadbalancer.server.port=5000"
+      # Middleware BasicAuth using users_file
+      - "traefik.http.middlewares.test-auth.basicauth.usersfile=/users_file"
       # Compress Middleware
       - "traefik.http.middlewares.test-compress.compress=true"
       # Error Pages Middleware
