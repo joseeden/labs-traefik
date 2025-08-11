@@ -6,6 +6,16 @@ providers:
   docker:
     exposedByDefault: false
 
+# enable Access logs
+accessLog: {}
+#Configuring Multiple Filters
+# accessLog:
+#   filters:    
+#     statusCodes:
+#       - "404"
+#     retryAttempts: true
+#     minDuration: "10ms"
+
 log:                  # DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
   level: INFO     
 
