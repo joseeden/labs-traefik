@@ -1,0 +1,17 @@
+api:
+  dashboard: true
+  insecure: true
+
+providers:
+  docker:
+    exposedByDefault: false
+
+log:                  # DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
+  level: INFO     
+  # level: DEBUG
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
