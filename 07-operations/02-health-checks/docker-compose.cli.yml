@@ -1,0 +1,63 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:v2.3
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.dns.yml:/etc/traefik/traefik.yml
+      - ./letsencrypt:/letsencrypt
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
+    environment:
+      - DO_AUTH_TOKEN=${DO_AUTH_TOKEN}
+    env_file:
+      - .env
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.dashboard.rule=Host(`joeden.site`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.dashboard.service=api@internal"
+        - "traefik.http.routers.dashboard.entrypoints=websecure"
+        - "traefik.http.routers.dashboard.tls=true"
+        - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+        - "traefik.http.routers.dashboard.middlewares=auth"
+        - "traefik.http.middlewares.auth.basicauth.usersfile=/usersfile"
+        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+
+  # Add the catapp service
+  catapp:
+    image: mikesir87/cats:1.0
+    labels:
+      - "traefik.enable=true"
+      # Routers
+      - "traefik.http.routers.catapp.rule=Host(`catapp.localhost`)"
+      - "traefik.http.routers.catapp.service=catapp"
+      - "traefik.http.routers.catapp.entrypoints=web"
+      - "traefik.http.routers.catapp.middlewares=test-compress,test-errorpages"
+      # Services
+      - "traefik.http.services.catapp.loadbalancer.server.port=5000"
+      # Compress Middleware
+      - "traefik.http.middlewares.test-compress.compress=true"
+      # Error Pages Middleware
+      - "traefik.http.middlewares.test-errorpages.errors.status=400-599"
+      - "traefik.http.middlewares.test-errorpages.errors.service=error"
+      - "traefik.http.middlewares.test-errorpages.errors.query=/{status}.html"
+
+  # Error Page service
+  error:
+    image: guillaumebriday/traefik-custom-error-pages
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.error.rule=Host(`error.localhost`)"
+      - "traefik.http.routers.error.service=error"
+      - "traefik.http.services.error.loadbalancer.server.port=80"
+      - "traefik.http.routers.error.entrypoints=web"

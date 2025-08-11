@@ -1,0 +1,44 @@
+api:
+  dashboard: true
+  # insecure: false is default
+  insecure: true
+
+# Enable Healthcheck
+ping: {}  
+
+providers:
+  docker:
+    exposedByDefault: false
+    swarmMode: true
+
+log:
+  level: ERROR
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+  traefik:
+    address: ":8080"   
+
+# Challenge DNS
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: josemanuelitoeden@gmail.com
+      storage: /letsencrypt/acme.json
+      dnsChallenge:
+        provider: digitalocean
+        delayBeforeCheck: 0
+
+# Dashboard router
+http:
+  routers:
+    traefik:
+      rule: Host(`dashboard.joeden.site`)  # or use your domain + a subdomain
+      entryPoints:
+        - traefik
+      service: api@internal
+      # middlewares:                       # DO NOT DO IN PRODUCTION
+      #   - auth                           # Disables the authentication

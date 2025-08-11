@@ -1,0 +1,3 @@
+# Ignore environment variable file containing secrets
+.env
+usersfile
